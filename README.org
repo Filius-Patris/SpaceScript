@@ -1,1 +1,176 @@
 #+TITLE: SpaceScript
+#+SUBTITLE: When Brainfuck just isn't quite enough.
+#+AUTHOR: Jakob Klemm
+#+DATE: 22.1.2021
+#+OPTIONS: toc:nil num:nil
+#+LATEX: \setlength\parindent{0pt}
+
+* Concept
+  In =SpaceScript= everything operates on a central
+  =Key/Value-Store=, referred to as memory or the global =Space=. Any variable will be
+  stored in this central map. While individual operations on single
+  values are possible and required, most common tasks can be completed
+  while staying within scoped =K/V-Stores=, referred to as =Spaces=. =Spaces= are the core idea in =SpaceScript= and a lot of operations happen on or with them.
+
+* Basic operations & Syntax
+  Assigning a single value to a given name (a
+  =Key=), is as simple as using the following syntax:
+  #+begin_src spacescript
+  x <- 42
+  #+end_src
+  This means that a new =K/V-Pair= is added to the global map. The
+  value can later be fetched using the Key =x=. 
+
+  Since =Spaces= are one of the most fundamental units of
+  =SpaceScript=, their syntax needs to be intuitive and easy to
+  write. Declaring one is as easy as declaring a list of values:
+  #+begin_src spacescript
+  y <- {1, 3, 5}
+  #+end_src
+
+* Spaces
+  When =Spaces= are defined they can be directly indexed or have
+  implied indexes. The underlying system will always use
+  indexes and the system will assign them automatically if none are
+  given. This only applies to named spaces, not the global memory. If
+  no index or =Key= is provided, the system assumes continuous numbering
+  as the primary =Key=, meaning the following two =Spaces= are
+  identical:
+  #+begin_src
+  a <- {3, 5, 6, 1}
+  b <- {0: 3, 1: 5, 2: 6, 3: 1}
+  #+end_src
+
+  Since each value in a =Space= has a unique key (appending an already
+  existing key will overwrite the original value), they can be
+  direclty fetched from the =Space= using the key. This is done using
+  a simmilar syntax to function parameters.
+  #+begin_src spacescript
+  z <- {0: 3, 1: 4} <- 1
+  z <- 4
+  #+end_src
+
+  Since the two systems use the same syntax it is important to
+  understand that fetching values from a =Space= only works on
+  completed spaces, meaning any =Space= that doesn't contain any
+  parameters, otherwise they are treated as functions.
+
+  Another important aspect of =Spaces= is that they operate
+  unlike normal lists in other languages.
+  - There is no rule on datatypes and they can be mixed within one
+    =Space=.
+  - Keys don't have any requirement to be sequential. It is no problem
+    to skip certain keys.
+  - A skipped key is still in the =Space= but it has the value =nil=
+    assigned to it. This also means that =Spaces= have an infinite
+    length and all indices are defined but simply have the value
+    =nil=.
+
+  The language implements no delete operation, but it would be equal
+  to simply setting a specific key to =nil=.
+  Assignments again use the nearly identical syntax discussed before:
+  #+begin_src spacescript
+  a <- {x: 42, z: 17} <- {x: 24}
+  a <- {x: 24, z: 17}
+  #+end_src
+  (If a value should simply be appended and the key be chosen by the system a space with no key can be provided.)
+
+* Symbols
+    We have already seen how =Spaces= can be defined using ={ }=. With this we define one of a few special symbols / operations in =SpaceScript=. Another is defined using Parentheses. 
+    The genral rule of =( )= is that they can be written / interpreted as a single value. 
+    This means that any operation can be put inside parentheses, as long as it evaluates into a single value /42 = (40 + 2)/.
+    Another operation not commonly seen in other languages is utilizing the =#=-Symbol. With it scoping can be indicated. If an operation takes place inside a =Space=, the =#= prefixed to any name indicates global scoping.
+
+* Functions
+  In =SpaceScript= functions are simply =Spaces= with placeholder
+  names or parameters. So a square function could be defined as
+  follows:
+  #+begin_src spacescript
+  sqr <- {x * x}
+  #+end_src
+  In order to then call that function a nearly identical syntax can be used:
+  #+begin_src spacescript
+  squared <- sqr <- 2
+  #+end_src
+
+* Conditions
+  While it
+  should not strictly be required to use special brackets for
+  conditions in order to achieve turing-completeness, it helps a lot
+  with clarity. This also results in =SpaceScripts= condition syntax
+  being simmilar to a feature in other languages called the ternary
+  operator.
+  #+begin_src spacescript
+  b <- ("Greater" ? x >= 12,  "Exact" ? x == 12, "Something" ? x, x)
+  #+end_src
+  It is important to understand that this behaves much like if-else
+  statements, meaning only one of them will match at once. The second
+  to last example simply means /not-nil/, with the last one being the
+  else or nothing case.
+
+* Loops
+  There are no for or while loops like in other languages. Instead all
+  repeated operations are handled by recursion.
+
+  An example of such behavior can look as follows:
+  #+begin_src spacescript
+  squares <- {}
+  y <- {#squares <- x, x * x, (y <- x + 2 ? x <= 10)}
+  #+end_src
+
+  This function uses tail-recursion to compute the squares of all the
+  numbers from one to ten and store them in a =Space=.
+
+* Operators
+  In some of the previous examples a few /special/ characters and
+  operators where used. In =spaceScript= there are only a handful of
+  these:
+  - + (Addition)
+  - - (Subtraction)
+  - * (Multiplikation)
+  - / (Division)
+  - % (Modulo)
+  All of these are used inline (instead of infront of the two
+  parameters), meaning they are not normal functions but rather part
+  of the language.
+
+  In addition to the operators there are also a few symbols for comparisons:
+  - || (Or)
+  - && (And)
+  - !! (Not)
+  - == (Equals)
+  - > (Greater than)
+  - < (Less than)
+  - >= (Greater than or equal)
+  - <= (Less than or equal)
+
+* IO
+  The current proposal for =SpaceScript= only includes console out
+  and console in. A possible implementation would also be to treat the
+  two communication lanes as functions, which can take target or
+  source parameters.
+
+  It would be easiest to simply define =output= and =input= as reserved names and implementing their logic in the language itself.
+
+  Once again we utilize the known arrow syntax, this time with just
+  half the components:
+  #+begin_src spacescript
+  output <- 42 [Print]
+  x <- input <- "Name?" [Read]
+  #+end_src
+
+* Comments & Styling
+  Anything between two square brackets will be treated as comments.
+  This means singe- and multiline comments can be declared the same
+  way.
+
+  All variables should start with a lower case letter and multiword
+  variables should be written using camelCase. It is also important to
+  use tabs over spaces, because it is clearly superior.
+
+  It should be possible to add round brackets around any operation.
+  From there normal math rules are used (inner to outer) to compute
+  the line.
+
+  In order to minimize stress and complexity of the compiler each
+  command should only be a single line long.
