@@ -5,12 +5,16 @@
 #+OPTIONS: toc:nil num:nil
 #+LATEX: \setlength\parindent{0pt}
 
+When Brainfuck just isn't quite enough.
+
 * Concept
-  In =SpaceScript= everything operates on a central
-  =Key/Value-Store=, referred to as memory or the global =Space=. Any variable will be
+  In =SpaceScript= everything operates on a central =Key/Value-Store=,
+  referred to as memory or the global =Space=. Any variable will be
   stored in this central map. While individual operations on single
   values are possible and required, most common tasks can be completed
-  while staying within scoped =K/V-Stores=, referred to as =Spaces=. =Spaces= are the core idea in =SpaceScript= and a lot of operations happen on or with them.
+  while staying within scoped =K/V-Stores=, referred to as =Spaces=.
+  =Spaces= are the core idea in =SpaceScript= and a lot of operations
+  happen on or with them.
 
 * Basic operations & Syntax
   Assigning a single value to a given name (a
@@ -19,7 +23,7 @@
   x <- 42
   #+end_src
   This means that a new =K/V-Pair= is added to the global map. The
-  value can later be fetched using the Key =x=. 
+  value can later be fetched using the Key =x=.
 
   Since =Spaces= are one of the most fundamental units of
   =SpaceScript=, their syntax needs to be intuitive and easy to
@@ -30,12 +34,11 @@
 
 * Spaces
   When =Spaces= are defined they can be directly indexed or have
-  implied indexes. The underlying system will always use
-  indexes and the system will assign them automatically if none are
-  given. This only applies to named spaces, not the global memory. If
-  no index or =Key= is provided, the system assumes continuous numbering
-  as the primary =Key=, meaning the following two =Spaces= are
-  identical:
+  implied indexes. The underlying system will always use indexes and
+  the system will assign them automatically if none are given. This
+  only applies to named spaces, not the global memory. If no index or
+  =Key= is provided, the system assumes continuous numbering as the
+  primary =Key=, meaning the following two =Spaces= are identical:
   #+begin_src
   a <- {3, 5, 6, 1}
   b <- {0: 3, 1: 5, 2: 6, 3: 1}
@@ -76,10 +79,16 @@
   (If a value should simply be appended and the key be chosen by the system a space with no key can be provided.)
 
 * Symbols
-    We have already seen how =Spaces= can be defined using ={ }=. With this we define one of a few special symbols / operations in =SpaceScript=. Another is defined using Parentheses. 
-    The genral rule of =( )= is that they can be written / interpreted as a single value. 
-    This means that any operation can be put inside parentheses, as long as it evaluates into a single value /42 = (40 + 2)/.
-    Another operation not commonly seen in other languages is utilizing the =#=-Symbol. With it scoping can be indicated. If an operation takes place inside a =Space=, the =#= prefixed to any name indicates global scoping.
+    We have already seen how =Spaces= can be defined using ={ }=. With
+    this we define one of a few special symbols / operations in
+    =SpaceScript=. Another is defined using parentheses. The genral
+    rule of =( )= is that they can be written / interpreted as a
+    single value. This means that any operation can be put inside
+    parentheses, as long as it evaluates into a single value /42 =
+    (40 + 2)/. Another operation not commonly seen in other languages
+    is utilizing the =#=-Symbol. With it scoping can be indicated. If
+    an operation takes place inside a =Space=, the =#= prefixed to any
+    name indicates global scoping.
 
 * Functions
   In =SpaceScript= functions are simply =Spaces= with placeholder
@@ -88,7 +97,8 @@
   #+begin_src spacescript
   sqr <- {x * x}
   #+end_src
-  In order to then call that function a nearly identical syntax can be used:
+  In order to then call that function a nearly identical syntax can be
+  used:
   #+begin_src spacescript
   squared <- sqr <- 2
   #+end_src
@@ -134,7 +144,8 @@
   parameters), meaning they are not normal functions but rather part
   of the language.
 
-  In addition to the operators there are also a few symbols for comparisons:
+  In addition to the operators there are also a few symbols for
+  comparisons:
   - || (Or)
   - && (And)
   - !! (Not)
@@ -150,7 +161,8 @@
   two communication lanes as functions, which can take target or
   source parameters.
 
-  It would be easiest to simply define =output= and =input= as reserved names and implementing their logic in the language itself.
+  It would be easiest to simply define =output= and =input= as
+  reserved names and implementing their logic in the language itself.
 
   Once again we utilize the known arrow syntax, this time with just
   half the components:
